@@ -56,7 +56,7 @@ int remove_timer(timer_t timerid)
 }
 
 
-int init()
+int __ojTimerInit()
 {
   int ii;
   printf("initializing\n");
@@ -78,6 +78,7 @@ void register_threadedTimer(timer_t* timerid,
 			    long milliseconds)
 {
   struct sigevent sig;
+  memset(&sig, 0, sizeof(struct sigevent));
   sig.sigev_notify = SIGEV_THREAD;
   sig.sigev_notify_function = function;
   sig.sigev_value.sival_int = 20;
@@ -107,7 +108,7 @@ int register_timer(timer_t* timerid, int (* func)(void), long milliseconds)
   static int isInit = 0;
   if(!isInit)
     {
-      init();
+      __ojTimerInit();
       isInit = 1;
     }
 
