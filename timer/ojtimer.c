@@ -12,6 +12,9 @@
 int (* __ojcallbacks[MAXCB])();
 timer_t __ojtimerid[MAXCB]; /* TimerID associated with callback function */
 
+/* Signal is initialized */
+static int __ojIsInit = 0;
+
 /* Main timer handler */
 void timer_handler(int sig, siginfo_t *si, void *uc)
 {
@@ -77,6 +80,13 @@ void register_threadedTimer(timer_t* timerid,
 			    void (*function),
 			    long milliseconds)
 {
+
+  if(!__ojIsInit)
+    {
+      __ojTimerInit();
+      __ojIsInit = 1;
+    }
+
   struct sigevent sig;
   memset(&sig, 0, sizeof(struct sigevent));
   sig.sigev_notify = SIGEV_THREAD;
@@ -105,11 +115,11 @@ void register_threadedTimer(timer_t* timerid,
 
 int register_timer(timer_t* timerid, int (* func)(void), long milliseconds)
 {
-  static int isInit = 0;
-  if(!isInit)
+  
+  if(!__ojIsInit)
     {
       __ojTimerInit();
-      isInit = 1;
+      __ojIsInit = 1;
     }
 
   /* See if there is available timer */
