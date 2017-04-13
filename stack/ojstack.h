@@ -1,23 +1,24 @@
 #ifndef OJSTACK_H
 #define OJSTACK_H
 
-typedef enum StackEnums
+enum StackEnumsDef
   {
     NOTSET,
     SUCCESS,
     ERROR,
     WARNING,
     UNKOWN,
-  } StackEnums;
+  };
+typedef enum StackEnumsDef StackEnums;
 
-typedef struct ErrorStack
+struct ErrorStack
 {
   char* message;
-  enum StackEnums value;
-  struct ErrorStack* lower;
-} ErrorStack;
+  StackEnums value;
+  struct ErrorStackDef* lower;
+};
 
-/* __ mean not for public use */
+typedef struct ErrorStack ErrorStack;
 
 
 /* This returns a new stack variable */
