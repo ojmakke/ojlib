@@ -7,7 +7,7 @@
 #endif
 
 #ifdef ERRLOG
-#define LOGE(...) fprintf(stdout, __VA_ARGS__)
+#define LOGE(...) fprintf(stderr, __VA_ARGS__)
 #else
 #define LOGE(...)
 #endif
@@ -17,6 +17,13 @@
 #else
 #define LOGI(...)
 #endif
+
+#ifdef NORMALLOG
+#define LOGN(...) fprintf(stdout, __VA_ARGS__)
+#else
+#define LOGN(...)
+#endif
+
 
 #ifdef DEBUGLOG
 #define LOGD(...) fprintf(stdout, __VA_ARGS__)

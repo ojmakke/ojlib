@@ -1,4 +1,5 @@
 #include "ojtimer.h"
+#include "../ojlogger/ojlogger.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -9,8 +10,8 @@
 /* Maximum callbacks */
 #define MAXCB 5
 /* delcare variable as array of pointers to function returning int */
-int (* __ojcallbacks[MAXCB])();
-timer_t __ojtimerid[MAXCB]; /* TimerID associated with callback function */
+static int (* __ojcallbacks[MAXCB])();
+static timer_t __ojtimerid[MAXCB]; /* TimerID associated with callback function */
 
 /* Signal is initialized */
 static int __ojIsInit = 0;
@@ -31,7 +32,7 @@ void timer_handler(int sig, siginfo_t *si, void *uc)
 	if(__ojtimerid[ii] == 0) continue;
 	if(__ojtimerid[ii] == *tidp && __ojcallbacks[ii] != NULL)
 	  {
-	    printf("Timer id is %lu and index = %d \n", *tidp, ii);
+	    LOGD("Timer id is %lu and index = %d \n", *tidp, ii);
 	    __ojcallbacks[ii]();
 	  }
       }
@@ -62,7 +63,7 @@ int remove_timer(timer_t timerid)
 int __ojTimerInit()
 {
   int ii;
-  printf("initializing\n");
+  LOGD("initializing ojTimerInit\n");
   for(ii = 0; ii < MAXCB; ii++)
     {
       __ojcallbacks[ii] = NULL;
@@ -106,7 +107,7 @@ void register_threadedTimer(timer_t* timerid,
 
   if(timer_settime(*timerid,0, &spec, NULL) == -1)
     {
-      fprintf(stderr, "Error setting timer\n");
+      LOGE("Error setting timer\n");
       //  return -1;
       return;
     }
@@ -135,19 +136,19 @@ int register_timer(timer_t* timerid, int (* func)(void), long milliseconds)
     }
   if(index == MAXCB + 1)
     {
-      fprintf(stdout, "Error. timers are full\n");
+      LOGE("Error. timers are full\n");
       return -1;
     }
-  printf("Index is %d\n", index);
+  LOGD("Index is %d\n", index);
 
   struct sigevent sevp;
   sevp.sigev_notify = SIGEV_SIGNAL;
   sevp.sigev_signo = SIGRTMIN;
   sevp.sigev_value.sival_ptr = timerid;
-  printf("Created timerid %lu\n", *timerid);
+  LOGD("Created timerid %lu\n", *timerid);
   if(timer_create(CLOCK_MONOTONIC, &sevp, timerid) == -1)
     {
-      fprintf(stderr, "Error creating timer\n");
+      LOGE("Error creating timer\n");
       return -1;
     }
 
@@ -161,21 +162,21 @@ int register_timer(timer_t* timerid, int (* func)(void), long milliseconds)
 
   if(timer_settime(*timerid,0, &spec, NULL) == -1)
     {
-      fprintf(stderr, "Error setting timer\n");
+      LOGE("Error setting timer\n");
       return -1;
     }
 
   /* Now store in globals */
   __ojtimerid[index] = *timerid;
   __ojcallbacks[index] = func;
-  printf("Stored in index %d\n", index);
+  LOGD("Stored in index %d\n", index);
   return 0;
 }
 
 
 void handleCtrlC()
 {
-  printf("Terminating\n");
+  LOGD("Terminating\n");
   fflush(stdout);
   exit(1);
 }

@@ -1,4 +1,5 @@
 #include "ojstack.h"
+#include "../ojlogger/ojlogger.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -18,7 +19,7 @@ ErrorStack* stackPush(ErrorStack** theStack, char* message, StackEnums value)
   ErrorStack* newLayer = (ErrorStack* ) malloc(sizeof(ErrorStack));
   if(newLayer == NULL)
     {
-      fprintf(stderr, "Cannot allocate layer to stack. Qutiting\n");
+      LOGE("Cannot allocate layer to stack. Qutiting\n");
       stackRemove(theStack);
       exit(0);
     }
@@ -36,7 +37,7 @@ inline ErrorStack* stackPopS(ErrorStack** theStack)
 {
   if(theStack == NULL || *theStack == NULL)
     {
-      fprintf(stderr, "Stack is Null\n");
+      LOGE("Stack is Null\n");
       return NULL;
     }
 
@@ -51,17 +52,17 @@ ErrorStack* stackPopV(ErrorStack** theStack)
 {
   if(theStack == NULL || *theStack == NULL)
     {
-      fprintf(stderr, "Stack is Null\n");
+      LOGE("Stack is Null\n");
       return NULL;
     }
   
   if((*theStack)->value == ERROR)
     {
-      fprintf(stderr, "%s\n", (*theStack)->message);
+      LOGE("%s\n", (*theStack)->message);
     }
   else
     {
-      fprintf(stdout, "%s\n", (*theStack)->message);
+      LOGN(stdout, "%s\n", (*theStack)->message);
     }
 
   return stackPopS(theStack);
@@ -71,12 +72,12 @@ ErrorStack* stackPopE(ErrorStack** theStack)
 {
   if(theStack == NULL || *theStack == NULL)
     {
-      printf("Error. The stack is Null\n");
+      LOGE("Error. The stack is Null\n");
       return NULL;
     }
   if((*theStack)->value == ERROR)
     {
-      fprintf(stderr, "%s\n", (*theStack)->message);
+      LOGE("%s\n", (*theStack)->message);
     }
   return stackPopS(theStack);
 }
@@ -85,16 +86,16 @@ void stackDumpV(ErrorStack** theStack)
 {
   if(theStack == NULL || *theStack == NULL)
     {
-      printf("Error. Stack is null\n");
+      LOGE("Error. Stack is null\n");
       return;
   }
 
   while((*theStack)->lower != NULL)
     {
-      printf("Dump\n");
+      LOGD("Dump\n");
       stackPopV(theStack);
     }
-  printf("Done\n");
+  LOGD("Done\n");
 }
 
 void stackDumpE(ErrorStack** theStack)

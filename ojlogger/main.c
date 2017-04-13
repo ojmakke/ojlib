@@ -10,6 +10,7 @@ int main(int argc, char* argv[])
   LOGI("This is information %d %s\n", val, testString);
   LOGD("This is debug %d %s\n", val, testString);
   LOGT("This is test %d %s\n", val, testString);
+  LOGN("This is a normal log %d %s\n", val, testString);
   LOG1("This is level 1 %d %s\n", val, testString);
   LOG2("Level 2\n");
   LOG3("Level 3\n");
