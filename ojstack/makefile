@@ -17,6 +17,7 @@ main.o: main.c
 ojstack.o: ojstack.c
 	$(CC) $(CFLAGS) ojstack.c
 
+.PHONY: clean
 
-clean: 
-	rm ojstack.o main.o stacktest
+clean:
+	rm -f ojstack.o main.o stacktest

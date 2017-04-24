@@ -1,10 +1,9 @@
 CC=gcc
 CFLAGS=-c -Wall
 DEPS = ../ojmemory/ojmemory.o
-CDEFS= -DERRORLOG -DDEBUGLOG
+CDEFS= -DERRORLOG -DDEBUGLOG -DTESTLOG -DINFOLOG
 
 all: actual
-
 
 test: strhashtest
 
@@ -20,6 +19,7 @@ ojstrhash.o: ojhash.c
 	$(CC) $(CFLAGS) $(CDEFS) ojhash.c
 
 
+.PHONY: clean
 
 clean: 
-	rm ojstrhash.o main.o strhashtest
+	rm -f ojstrhash.o main.o strhashtest

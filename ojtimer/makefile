@@ -17,6 +17,7 @@ main.o: main.c
 ojtimer.o: ojtimer.c
 	$(CC) $(CFLAGS) ojtimer.c
 
+.PHONY: clean
 
 clean: 
-	rm ojtimer.o main.o timertest
+	rm -f ojtimer.o main.o timertest

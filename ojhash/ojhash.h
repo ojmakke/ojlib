@@ -17,4 +17,7 @@ void oj_hash_add(char* str,
 
 /* The reason for the sort is that the root address itself may be sorted */
 void oj_hash_sort(struct OJLList__Cell** llist);
+
+void oj_hash_dump(struct OJLList__Cell* llist);
+
 #endif

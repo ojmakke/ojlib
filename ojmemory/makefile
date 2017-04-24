@@ -16,6 +16,7 @@ main.o: main.c
 ojmemory.o: ojmemory.c
 	$(CC) $(CFLAGS) ojmemory.c
 
+.PHONY: clean
 
 clean: 
-	rm ojmemory.o main.o ojmemorytest
+	rm -f ojmemory.o main.o ojmemorytest

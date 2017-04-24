@@ -19,9 +19,9 @@ struct OJLList##type \
   struct OJLList##type* nextNode; \
   struct OJLList##type* lastNode; \
 };					   \
- typedef struct OJLList##type OJLList##type; \
+typedef struct OJLList##type OJLList##type; \
 					   \
-OJLList##type* ojllist##type##_create(type value)			\
+OJLList##type* ojllist##type##_create(type *value)			\
  {									\
   OJLList##type* newBlock = (OJLList##type* )malloc(sizeof(OJLList##type)); \
   if(newBlock == NULL)							\
@@ -34,15 +34,15 @@ OJLList##type* ojllist##type##_create(type value)			\
 									\
   LOGT("Heap Block set to 0\n");					\
   newBlock->lastNode = newBlock;					\
-  newBlock->value = value;						\
+  newBlock->value = *value;						\
   LOGT("Heap last block set to self\n");				\
   return newBlock;							\
  }									\
 									\
 									\
- void ojllist##type##_push(OJLList##type* llistBlock, type value)	\
+ void ojllist##type##_push(OJLList##type* llistBlock, type *value)	\
 {									\
-  LOGT("**************\n");						\
+  LOGT("ojlist push**************\n");						\
   if(llistBlock == NULL)						\
     {									\
       LOGE("Passed a NULL llist\n");					\
@@ -53,13 +53,13 @@ OJLList##type* ojllist##type##_create(type value)			\
   LOGT("Address of lastNode is %lu\n", lastNode);			\
 									\
   lastNode->nextNode = (OJLList##type*)ojllist##type##_create(value); /* Local use*/ \
-  LOGT("Value of nextNode is %d\n", (type) lastNode->value);		\
+  LOGT("Value of nextNode is %lu\n", (type) lastNode->value);		\
   LOGT("Next Block is the now block, at %lu\n", lastNode->nextNode);	\
 									\
   lastNode->nextNode->lastNode = llistBlock->lastNode;			\
 									\
   llistBlock->lastNode = lastNode->nextNode;				\
-  LOGT("New Address of lastNode is %lu\n", lastNode);			\
+  LOGT("New Address of lastNode is %lu\n", llistBlock->lastNode);			\
   LOGT("-----------------------------\n");				\
 }									\
 									\

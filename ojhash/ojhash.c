@@ -8,11 +8,14 @@
 #include <stdio.h>
 #include <unistd.h>
 
+/* to hold memory location */
+typedef void* voidptr;
+OJLIST(voidptr);
+
 struct __Cell
 {
   unsigned long hash;
-  void** ptr; /* Pointer to pointer to actual object for which this hash is for */
-  size_t size;
+  OJLListvoidptr* objects; /* Linked List to hold address of objects */
 };
 
 typedef struct __Cell __Cell;
@@ -22,13 +25,16 @@ OJLIST(__Cell)
 struct OJLList__Cell* oj_hash_init(struct HeapBlock** heap)
 {
   LOGD("oj_hash_init\n");
-  OJLList__Cell* table = (OJLList__Cell*) permalloc(*heap, sizeof(OJLList__Cell));
-  table->lastNode = NULL;
+  struct __Cell myCell;
+  memset(&myCell, 0, sizeof(__Cell));
+  myCell.hash = 0;
+  
+  OJLList__Cell* table = ojllist__Cell_create(&myCell);
   table->nextNode = NULL;
-  table->value.ptr = NULL;
+  table->value.objects = NULL;
+  //table->value.objects->nextNode = NULL;
+
   table->value.hash = 0;
-  table->value.size = 0;
-  LOGD("\\\oj_hash_init\n");
   return table;
 }
 
@@ -37,6 +43,8 @@ void oj_hash_add(char* str,
 		 struct OJLList__Cell* llist,
 		 struct HeapBlock* heap)
 {
+  LOGD("oj_hash_add\n");
+  /* Calculate the hash */
   unsigned long hash = 5381;
   int c;
 
@@ -56,40 +64,63 @@ void oj_hash_add(char* str,
     {
       hash = ((hash << 5) + hash) + c;
     }
-  OJLList__Cell* tmpItem = llist;
-  LOGD("Hash is %d\n", hash);
+  LOGD("Hash is %lu\n", hash);
 
+  /* Find if hash already exist */
+  OJLList__Cell* tmpItem = llist;
   while(tmpItem != NULL)
     {
-      if(tmpItem->value.ptr == NULL ) /* Indication of end of list */
-	{
-	  break;
-	}
-      ;
       if(tmpItem->value.hash == hash)
 	{
 	  break;
 	}
-      tmpItem = llist->nextNode;
+      tmpItem = tmpItem->nextNode;
     };
 
-  OJLList__Cell* node;
-  if(tmpItem->value.ptr == NULL) /* End of List */
+  /* Get the node for the hash. If new, allocate */
+  __Cell* cellNode = &llist->value;
+
+  OJLListvoidptr* newMem; 
+  if(tmpItem == NULL) /* End of List */
     {
       LOGD("Allocating node\n");
-      node = (OJLList__Cell*) permalloc(heap, sizeof(OJLList__Cell));
-      node->value.hash = hash;
-    }
-  else
-    {
-      node = tmpItem;
+      cellNode->hash = hash;
+      newMem = ojllistvoidptr_create(&object);
+      LOGD("(((((newMem is at %lu %lu)))))\n", newMem, *newMem);
+      cellNode->objects = newMem;
+      //   ojllist__Cell_push(llist, &node);
+      
+      LOGD("We have: llist at %lu, llist node is %lu and node's llist is %lu\n",
+	   llist, llist->value.objects, llist->value.objects->lastNode);
     }
 
-  /* Node is either new, or one which we found at tmpItem */
-  node->value.ptr[node->value.size] = permalloc(heap, sizeof(void*));
-  node->value.ptr[node->value.size] = object;
-  node->value.size++;
+  else
+    {
+      LOGD("\n\n\nHash exists:  %lu!\n", tmpItem->value);
+      cellNode = &tmpItem->value;
+      newMem = cellNode->objects;
+      
+      LOGD("Addr is %lu\n", *newMem);
+      ojllistvoidptr_push(newMem, &object);
+      printf("Dumping:\n");
+
+      OJLListvoidptr* mobj = cellNode->objects;
+      while(mobj->value != NULL)
+	{
+	  printf("%lu\n", mobj->value);
+	  if(mobj->nextNode == NULL) break;
+	  mobj = mobj->nextNode;
+	  LOGD("Next\n");
+	}
+    }
+
+  /* Now we are pointing to the node with the correct hash.
+     Insert new object reference in its linked list */
   
+  //ojllistvoidptr_push(&node.objects, &object);
+  LOGD("Next Node address is %lu\n", llist->nextNode);
+  LOGD("////oj_hash_add\n");
+ 
 }
 
 void oj_hash_sort(struct OJLList__Cell** llist)
@@ -154,6 +185,29 @@ void oj_hash_sort(struct OJLList__Cell** llist)
 	}
 
       /* Note that *tmpNode is pointing ot next node. It will keep moving */
+    }
+}
+
+void oj_hash_dump(struct OJLList__Cell* llist)
+{
+  OJLList__Cell* tmpList = llist;
+  while(tmpList != NULL)
+    {
+      LOGD("hash: %lu\n",  tmpList->value.hash);
+      LOGD("Hash objects are at %lu\n",  tmpList->value.objects);
+    
+      OJLListvoidptr* tmpObj = tmpList->value.objects;
+      int ii = 0;
+      while(1)
+	{
+	  ii++;
+	  LOGI("\t %d: address: %lu\n", ii, tmpObj->value);
+
+	  if(tmpObj->nextNode == NULL)
+	    break;
+	  tmpObj = tmpObj->nextNode;
+	} 
+      tmpList = tmpList->nextNode;
     }
 }
 

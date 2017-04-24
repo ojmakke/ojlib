@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-c -Wall
-CDEFS= -DERRLOG -DWARNLOG -DINFOLOG -DDEBUGLOG -DTESTLOG -DLEVEL1LOG -DLEVEL2LOG -DLEVEL3LOG -DLEVEL4LOG -DLEVEL5LOG
+CDEFS= -DERRLOG -DWARNLOG -DINFOLOG
 
 test: ojllisttest
 
@@ -10,5 +10,7 @@ ojllisttest: main.o
 main.o: main.c
 	$(CC) $(CFLAGS) main.c $(CDEFS)
 
+.PHONY: clean
+
 clean: 
-	rm main.o ojlisttest
+	rm -f main.o ojlisttest
