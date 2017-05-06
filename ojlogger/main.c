@@ -9,7 +9,12 @@ int main(int argc, char* argv[])
   LOGW("This is warning %d %s\n", val, testString);
   LOGI("This is information %d %s\n", val, testString);
   LOGD("This is debug %d %s\n", val, testString);
+  LOGT("This is test %d %s\n", val, testString);
   LOG1("This is level 1 %d %s\n", val, testString);
-  LOG2("You got the idea\n");
+  LOG2("Level 2\n");
+  LOG3("Level 3\n");
+  LOG4("Level 4\n");
+  LOG5("Level 5\n");
+
   return 0;
 }

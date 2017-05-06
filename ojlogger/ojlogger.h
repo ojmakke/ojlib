@@ -24,6 +24,12 @@
 #define LOGD(...)
 #endif
 
+#ifdef TESTLOG
+#define LOGT(...) fprintf(stdout, __VA_ARGS__)
+#else
+#define LOGT(...)
+#endif
+
 #ifdef LEVEL1LOG
 #define LOG1(...) fprintf(stdout, __VA_ARGS__)
 #else
