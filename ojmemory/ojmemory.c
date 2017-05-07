@@ -85,6 +85,7 @@ void free_heap(struct HeapBlock* block)
     {
       tmpNode = node->nextBlock;
       LOGT("Freeing address %lu\n", node);
+      free(node->allocated);
       free(node);
       node = tmpNode;
       LOGT("Next Node to free is %lu\n", node);
