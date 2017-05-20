@@ -9,27 +9,29 @@
 #include <unistd.h>
 
 /* to hold memory location */
-typedef void* voidptr;
+typedef const void* voidptr;
 OJLIST(voidptr);
 
 struct __Cell
 {
   unsigned long hash;
-  OJLListvoidptr* objects; /* Linked List to hold address of objects */
+  OJLListvoidptr* objects; /* Linked List to hold address of objects. 
+			      It is a pointer because we want to set it 
+			      directly from create_heap() */
 };
 
 typedef struct __Cell __Cell;
 
 OJLIST(__Cell)
 
-struct OJLList__Cell* oj_hash_init(struct HeapBlock** heap)
+struct OJLList__Cell* oj_hash_init(struct HeapBlock* heap)
 {
   LOGD("oj_hash_init\n");
   struct __Cell myCell;
   memset(&myCell, 0, sizeof(__Cell));
   myCell.hash = 0;
-  
-  OJLList__Cell* table = ojllist__Cell_create(&myCell);
+
+  OJLList__Cell* table = ojllist__Cell_create(heap, &myCell);
   table->nextNode = NULL;
   table->value.objects = NULL;
   //table->value.objects->nextNode = NULL;
@@ -38,8 +40,8 @@ struct OJLList__Cell* oj_hash_init(struct HeapBlock** heap)
   return table;
 }
 
-void oj_hash_add(char* str,
-		 void* object,
+void oj_hash_add(const char* str,
+		 const void* const object,
 		 struct OJLList__Cell* llist,
 		 struct HeapBlock* heap)
 {
@@ -67,58 +69,46 @@ void oj_hash_add(char* str,
   LOGD("Hash is %lu\n", hash);
 
   /* Find if hash already exist */
-  OJLList__Cell* tmpItem = llist;
-  while(tmpItem != NULL)
+  OJLList__Cell* tmpCellList = llist;
+  while(tmpCellList != NULL)
     {
-      if(tmpItem->value.hash == hash)
+      if(tmpCellList->value.hash == hash)
 	{
 	  break;
 	}
-      tmpItem = tmpItem->nextNode;
+      tmpCellList = tmpCellList->nextNode;
     };
 
   /* Get the node for the hash. If new, allocate */
-  __Cell* cellNode = &llist->value;
+  __Cell cellNode;
+  memset(&cellNode, 0, sizeof(cellNode));
+  //  __Cell* cellNode = &llist->value;
+  // __Cell* cellNode = &tmpCellList->value;
 
   OJLListvoidptr* newMem; 
-  if(tmpItem == NULL) /* End of List */
+  if(tmpCellList == NULL) /* End of List */
     {
-      LOGD("Allocating node\n");
-      cellNode->hash = hash;
-      newMem = ojllistvoidptr_create(&object);
-      LOGD("(((((newMem is at %lu %lu)))))\n", newMem, *newMem);
-      cellNode->objects = newMem;
-      //   ojllist__Cell_push(llist, &node);
-      
-      LOGD("We have: llist at %lu, llist node is %lu and node's llist is %lu\n",
-	   llist, llist->value.objects, llist->value.objects->lastNode);
+      cellNode.hash = hash;
+      newMem = ojllistvoidptr_create(heap, &object);
+      newMem->nextNode = NULL;
+      cellNode.objects = newMem;
+      ojllist__Cell_push(heap, llist, &cellNode);
+      tmpCellList = llist->lastNode; 
     }
 
   else
     {
-      LOGD("\n\n\nHash exists:  %lu!\n", tmpItem->value);
-      cellNode = &tmpItem->value;
-      newMem = cellNode->objects;
-      
-      LOGD("Addr is %lu\n", *newMem);
-      ojllistvoidptr_push(newMem, &object);
-      printf("Dumping:\n");
+      newMem = tmpCellList->value.objects;
+      ojllistvoidptr_push(heap, newMem, &object);
 
-      OJLListvoidptr* mobj = cellNode->objects;
+      OJLListvoidptr* mobj = tmpCellList->value.objects;
       while(mobj->value != NULL)
 	{
-	  printf("%lu\n", mobj->value);
 	  if(mobj->nextNode == NULL) break;
 	  mobj = mobj->nextNode;
-	  LOGD("Next\n");
 	}
     }
 
-  /* Now we are pointing to the node with the correct hash.
-     Insert new object reference in its linked list */
-  
-  //ojllistvoidptr_push(&node.objects, &object);
-  LOGD("Next Node address is %lu\n", llist->nextNode);
   LOGD("////oj_hash_add\n");
  
 }
@@ -188,15 +178,22 @@ void oj_hash_sort(struct OJLList__Cell** llist)
     }
 }
 
-void oj_hash_dump(struct OJLList__Cell* llist)
+void oj_hash_dump(const struct OJLList__Cell* llist)
 {
-  OJLList__Cell* tmpList = llist;
+  const OJLList__Cell* tmpList = llist;
   while(tmpList != NULL)
     {
       LOGD("hash: %lu\n",  tmpList->value.hash);
       LOGD("Hash objects are at %lu\n",  tmpList->value.objects);
     
       OJLListvoidptr* tmpObj = tmpList->value.objects;
+      printf("Head, Last, Value %lu \n", tmpList->value.objects);
+      if(tmpObj == NULL)
+	{
+	  LOGD("Cell Chain empty! Something went wrong\n");
+	  tmpList = tmpList->nextNode;
+	  continue;
+	}
       int ii = 0;
       while(1)
 	{

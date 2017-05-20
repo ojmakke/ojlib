@@ -22,4 +22,4 @@ ojstrhash.o: ojhash.c
 .PHONY: clean
 
 clean: 
-	rm -f ojstrhash.o main.o strhashtest
+	rm -f ojhash.o ojstrhash.o main.o strhashtest
