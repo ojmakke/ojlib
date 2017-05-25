@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
   struct OJLList__Cell* table;
   struct HeapBlock* myHeap;
 
-  myHeap = create_heap();
+  myHeap = oj_heap_create();
   table = oj_hash_init(myHeap);
   LOGD("Address of table is %lu\n", table);
   LOGD("Initialized heap\n\0");
@@ -24,7 +24,8 @@ int main(int argc, char* argv[])
 
   LOGT("Result:\n");
   oj_hash_dump(table);
-  
+
+  oj_heap_free(myHeap);
   return 0;
   
 }

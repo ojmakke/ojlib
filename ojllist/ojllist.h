@@ -11,7 +11,21 @@
 #include <string.h>
 
 struct HeapBlock;
-#define OJMETHOD(x,  y) (x = y)
+
+/* This macro OJLIST(type) takes in a type, such as an int or a typedef,
+   and creates a linkedlist by appending OJLList+type. Then functions will be available:
+
+   ojllist##type##_create: Returns a linked list with value of type "type".
+
+   To free the list, you have to free the heap which was passed to the list
+
+
+   ojllist##type_push: Creates a node for the linked list which has
+   a member value of the value which is passed. This is added to the end of the linked list.
+
+   The linked list has a "last" node which always points to the last node in the chain
+*/
+
 
 #define OJLIST(type) \
 		     \
@@ -27,7 +41,7 @@ typedef struct OJLList##type OJLList##type; \
 OJLList##type* ojllist##type##_create(struct HeapBlock* heap, type const *value) \
 {									\
   									\
-  OJLList##type* newBlock = (OJLList##type* )permalloc(heap, sizeof(OJLList##type)); \
+  OJLList##type* newBlock = oj_heap_malloc(heap, sizeof(OJLList##type)); \
   if(newBlock == NULL)							\
     {									\
       LOGE("Cannot create llist block\n");			       	\
@@ -41,7 +55,9 @@ OJLList##type* ojllist##type##_create(struct HeapBlock* heap, type const *value)
  }									\
 									\
 									\
- void ojllist##type##_push(struct HeapBlock* heap,  OJLList##type* llistBlock, type const *value) \
+ void ojllist##type##_push(struct HeapBlock* heap,			\
+                           OJLList##type* llistBlock,			\
+			   type const *value)				\
 {									\
   LOGD("ojlist push**************\n");						\
   if(llistBlock == NULL)						\

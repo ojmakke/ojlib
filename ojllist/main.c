@@ -9,7 +9,7 @@ OJLIST(float)
 int main(int argc, char* argv[])
 {
   struct HeapBlock* myHeap;
-  myHeap = create_heap();
+  myHeap = oj_heap_create();
   int x0 = 0;
   
   OJLListint* intList = (OJLListint *)ojllistint_create(myHeap, &x0);
@@ -32,7 +32,6 @@ int main(int argc, char* argv[])
       tmpNode = tmpNode->nextNode;
       
     } while(tmpNode != NULL);
-  free_heap(myHeap);
+  oj_heap_free(myHeap);
   return 0;
-  
 }

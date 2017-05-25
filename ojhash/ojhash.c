@@ -20,13 +20,14 @@ struct __Cell
 			      directly from create_heap() */
 };
 
+/* To be able to call the macro with same label as the struct tag */
 typedef struct __Cell __Cell;
 
 OJLIST(__Cell)
 
 struct OJLList__Cell* oj_hash_init(struct HeapBlock* heap)
 {
-  LOGD("oj_hash_init\n");
+  LOGD("**oj_hash_init**\n");
   struct __Cell myCell;
   memset(&myCell, 0, sizeof(__Cell));
   myCell.hash = 0;
@@ -37,6 +38,7 @@ struct OJLList__Cell* oj_hash_init(struct HeapBlock* heap)
   //table->value.objects->nextNode = NULL;
 
   table->value.hash = 0;
+  LOGD("--oj_hash_init--\n");
   return table;
 }
 
@@ -45,7 +47,7 @@ void oj_hash_add(const char* str,
 		 struct OJLList__Cell* llist,
 		 struct HeapBlock* heap)
 {
-  LOGD("oj_hash_add\n");
+  LOGD("**oj_hash_add**\n");
   /* Calculate the hash */
   unsigned long hash = 5381;
   int c;
@@ -82,8 +84,6 @@ void oj_hash_add(const char* str,
   /* Get the node for the hash. If new, allocate */
   __Cell cellNode;
   memset(&cellNode, 0, sizeof(cellNode));
-  //  __Cell* cellNode = &llist->value;
-  // __Cell* cellNode = &tmpCellList->value;
 
   OJLListvoidptr* newMem; 
   if(tmpCellList == NULL) /* End of List */
@@ -109,12 +109,13 @@ void oj_hash_add(const char* str,
 	}
     }
 
-  LOGD("////oj_hash_add\n");
+  LOGD("--oj_hash_add--\n");
  
 }
 
 void oj_hash_sort(struct OJLList__Cell** llist)
 {
+  LOGD("**oj_hash_sort**\n");
   int done = 0;
   OJLList__Cell* prev;
   OJLList__Cell* next;
@@ -176,10 +177,12 @@ void oj_hash_sort(struct OJLList__Cell** llist)
 
       /* Note that *tmpNode is pointing ot next node. It will keep moving */
     }
+  LOGD("--oj_hash_sort--\n");
 }
 
 void oj_hash_dump(const struct OJLList__Cell* llist)
 {
+  LOGD("**oj_hash_dump**\n");
   const OJLList__Cell* tmpList = llist;
   while(tmpList != NULL)
     {
@@ -206,6 +209,7 @@ void oj_hash_dump(const struct OJLList__Cell* llist)
 	} 
       tmpList = tmpList->nextNode;
     }
+  LOGD("--oj_hash_dump--\n");
 }
 
 
