@@ -2,13 +2,16 @@
 #define OJLLIST_H_
 #include <stdlib.h>
 
-
-#include "../ojlogger/ojlogger.h"
-#include "../ojmemory/ojmemory.h"
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef OJ_POSIX_THREAD
+#include <pthread.h>
+#endif
+
+#include "../ojlogger/ojlogger.h"
+#include "../ojmemory/ojmemory.h"
 
 struct HeapBlock;
 
@@ -26,6 +29,18 @@ struct HeapBlock;
    The linked list has a "last" node which always points to the last node in the chain
 */
 
+#ifdef OJ_POSIX_THREAD
+#define OPTIONAL_MUTEX pthread_mutex_t lock;
+#define OPTIONAL_MUTEX_INIT(x) pthread_mutex_init(x, NULL);
+#define OPTIONAL_MUTEX_LOCK(x) pthread_mutex_lock(x);
+#define OPTIONAL_MUTEX_UNLOCK(x) pthread_mutex_unlock(x);
+#else
+#define OPTIONAL_MUTEX
+#define OPTIONAL_MUTEX_INIT(x)
+#define OPTIONAL_MUTEX_LOCK(x) 
+#define OPTIONAL_MUTEX_UNLOCK(x)
+#endif
+
 
 #define OJLIST(type) \
 		     \
@@ -34,6 +49,8 @@ struct OJLList##type	   \
   type value;		   \
   struct OJLList##type* nextNode; \
   struct OJLList##type* lastNode; \
+  OPTIONAL_MUTEX			   \
+					   \
 };					   \
 typedef struct OJLList##type OJLList##type; \
 									\
@@ -71,7 +88,7 @@ OJLList##type* ojllist##type##_create(struct HeapBlock* heap, type const *value)
     exit(1);					\
   }						\
 						\
-									\
+  OPTIONAL_MUTEX_LOCK(&llistBlock->lock)					\
   OJLList##type* lastNode = llistBlock->lastNode;			\
 									\
   lastNode->nextNode = (OJLList##type*)ojllist##type##_create(heap, value); /* Local use*/ \
@@ -79,6 +96,7 @@ OJLList##type* ojllist##type##_create(struct HeapBlock* heap, type const *value)
   lastNode->nextNode->lastNode = llistBlock->lastNode;			\
 									\
   llistBlock->lastNode = lastNode->nextNode;				\
+  OPTIONAL_MUTEX_UNLOCK(&llistBlock->lock) ;				\
   LOGD("-----------------------------\n");				\
 }									\
 												

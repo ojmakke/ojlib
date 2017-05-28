@@ -1,13 +1,13 @@
 CC=gcc
 CFLAGS=-c -Wall
-CDEFS= -DERRLOG -DWARNLOG -DINFOLOG
+CDEFS= -DERRLOG -DWARNLOG -DINFOLOG -DOJ_POSIX_THREAD
 DEPS = ../ojmemory/ojmemory.o
-
+LIBS = pthread
 
 test: ojllisttest
 
 ojllisttest: main.o 
-	$(CC) main.c -o ojlisttest $(DEPS) $(CDEFS)
+	$(CC) main.c -o ojlisttest $(DEPS) $(CDEFS) -l$(LIBS)
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c $(CDEFS)
