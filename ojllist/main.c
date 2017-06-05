@@ -4,8 +4,7 @@
 #include "ojllist.h"
 #include "../ojmemory/ojmemory.h"
 
-OJLIST(int)
-OJLIST(float)
+OJLIST(int,0)
 
 struct Params
 {
@@ -15,8 +14,8 @@ struct Params
   int tid;
 };
 
-const int maxpush = 1000;
-const int maxthreads = 100;
+const int maxpush = 10;
+const int maxthreads = 4;
 void* runtest(void* params)
 {
   struct Params* mParams = params;
@@ -41,7 +40,7 @@ int main(int argc, char* argv[])
   pthread_t pool[maxthreads];
   // This list will be modified by multiple threads
   int x0 = 0;
-  OJLListint* intList = (OJLListint *)ojllistint_create(myHeap, &x0);
+  OJLListint* intList = ojllistint_create(myHeap);
 
   int ii;
   for(ii = 0; ii < maxthreads; ii++)
@@ -59,12 +58,28 @@ int main(int argc, char* argv[])
     pthread_join(pool[ii], NULL);
   
   OJLListint* tmpNode = intList;
+  __InnerListint* innerList = &intList->innerList;
+  ii = 0;
   do
     {
-      printf("value %d\n",tmpNode->value);
-      tmpNode = tmpNode->nextNode;
-      
-    } while(tmpNode != NULL);
+      if(ii >= innerList->unit_full && innerList->nextNode == NULL)
+	break;
+
+      if(ii >= innerList->unit_full)
+	{
+	  innerList = innerList->nextNode;
+	  ii = 0;
+	  continue;
+	}
+      printf("value %d\n",innerList->value[ii++]);    
+    } while(1);
+
+
+  for(ii = 0; ii < intList->size; ii++)
+    {
+      printf("Value using API is %d\n", *ojllistint_get(intList, ii));
+    }
+  
   oj_heap_free(myHeap);
   return 0;
 }

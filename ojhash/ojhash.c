@@ -10,7 +10,7 @@
 
 /* to hold memory location */
 typedef const void* voidptr;
-OJLIST(voidptr);
+OJLIST(voidptr, 100);
 
 struct __Cell
 {
@@ -23,7 +23,7 @@ struct __Cell
 /* To be able to call the macro with same label as the struct tag */
 typedef struct __Cell __Cell;
 
-OJLIST(__Cell)
+OJLIST(__Cell,100)
 
 struct OJLList__Cell* oj_hash_init(struct HeapBlock* heap)
 {
