@@ -10,6 +10,7 @@
 #define SUCCESS 1
 #define FAILURE 2
 
+
 int verify_syntax(char* str, int len)
 {
   int ii;
@@ -21,7 +22,7 @@ int verify_syntax(char* str, int len)
   if(len == 0 || str[0] != '(' || str[len-1] != ')')
     {
       LOGE("Check Boundaries for %s\n", str);
-      return FAILURE;
+      //    return FAILURE;
     }
 
   
@@ -103,5 +104,10 @@ int main(int argc, char* argv[])
   LOGD("Parsing ast for %s\n", argv[1]);
   ast = oj_ast_parseString(astHeap, argv[1], ast);
 
+  printTree(ast,1);
+
+
   return 0;
 }
+
+

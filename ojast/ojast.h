@@ -4,8 +4,9 @@
 
 struct OjAST
 {
-  char* root; 	// Name of the root
-  struct OjAST* children; // Children nodes 
+  struct OjAST* children; // Children nodes
+  char* root;
+  int numChildren;
 };
 
 struct OjAST* oj_ast_parseString(struct HeapBlock* heap,
@@ -13,3 +14,5 @@ struct OjAST* oj_ast_parseString(struct HeapBlock* heap,
 				 struct OjAST* allocated_parent
 				 );
 struct OjAST* oj_ast_getSubTree(struct OjAST* superTree);
+
+void printTree(struct OjAST const *  tree, int num);
