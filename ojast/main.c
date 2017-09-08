@@ -10,7 +10,6 @@
 #define SUCCESS 1
 #define FAILURE 2
 
-
 int verify_syntax(char* str, int len)
 {
   int ii;

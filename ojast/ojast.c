@@ -130,7 +130,7 @@ char* get_ojast_param(struct HeapBlock* heap, char* lispy, int num)
       ii++;
     }
   
-  printf("(--%d, %d, %d, %d)\n", beginIndex, endIndex, paramFound, num);
+//  printf("(--%d, %d, %d, %d)\n", beginIndex, endIndex, paramFound, num);
   assert(beginIndex < endIndex);
   // We add 1: since a string () has length 2,
   // but end - begin = 1
@@ -141,7 +141,7 @@ char* get_ojast_param(struct HeapBlock* heap, char* lispy, int num)
     retValue[ii] = lispy[ii+beginIndex];
   }
   retValue[strSize-1] = 0; // End with terminating null
-  LOGD("Parameter is %s\n", retValue);
+//  LOGD("Parameter is %s\n", retValue);
 
   return retValue;;
 }

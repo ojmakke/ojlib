@@ -7,4 +7,4 @@ test clean:
 	$(MAKE) -C ojtimer/ $@
 	$(MAKE) -C ojllist/ $@
 	$(MAKE) -C ojhash/ $@
- 
+	$(MAKE) -C ojast/ $@ 

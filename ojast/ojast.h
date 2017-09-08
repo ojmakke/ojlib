@@ -1,3 +1,5 @@
+#ifndef _OJAST_H_
+#define _OJAST_H_
 #include "../ojlogger/ojlogger.h"
 #include "../ojllist/ojllist.h"
 #include "../ojmemory/ojmemory.h"
@@ -16,3 +18,5 @@ struct OjAST* oj_ast_parseString(struct HeapBlock* heap,
 struct OjAST* oj_ast_getSubTree(struct OjAST* superTree);
 
 void printTree(struct OjAST const *  tree, int num);
+
+#endif
