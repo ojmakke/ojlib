@@ -6,5 +6,5 @@ test clean:
 	$(MAKE) -C ojmemory/ $@
 	$(MAKE) -C ojtimer/ $@
 	$(MAKE) -C ojllist/ $@
-	$(MAKE) -C ojhash/ $@
+#	$(MAKE) -C ojhash/ $@
 	$(MAKE) -C ojast/ $@ 
